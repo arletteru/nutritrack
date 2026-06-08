@@ -13,7 +13,7 @@ Sistema móvil de expediente clínico nutricional desarrollado con Flutter y Fir
 
 ### Paciente
 | Home | Mi plan | Tareas |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---:|
 | ![Home paciente](screenshots/home_pat.jpeg) | ![Mi plan](screenshots/summary.jpeg) | ![Tareas](screenshots/task.jpeg) |
 
 ## Stack tecnológico
