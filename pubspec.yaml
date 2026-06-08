@@ -45,6 +45,13 @@ dev_dependencies:
   # ── Freezed codegen ────────────────────────────────────────────────────────
   freezed: ^3.0.0
   json_serializable: ^6.8.0     # genera fromJson/toJson para los models
+  flutter_launcher_icons: ^0.14.1
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/logo.png"  # tu ícono
+  min_sdk_android: 21
 
 flutter:
   uses-material-design: true
