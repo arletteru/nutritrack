@@ -26,7 +26,7 @@ class NutriPrimaryButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF2D5016),
           foregroundColor: Colors.white,
-          disabledBackgroundColor: const Color(0xFF2D5016).withOpacity(0.6),
+          disabledBackgroundColor: const Color(0xFF2D5016).withValues(alpha: 0.6),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(28),
           ),

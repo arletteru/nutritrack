@@ -14,6 +14,7 @@ abstract class IAuthRepository {
     required String email,
     required String password,
     required String displayName,
+    required UserRole role,
   });
 
   /// Sign in via Google OAuth.

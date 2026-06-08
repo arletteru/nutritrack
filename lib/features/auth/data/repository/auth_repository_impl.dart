@@ -1,7 +1,7 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../../../../core/failures/exceptions.dart';
+import '../../../../core/exceptions/app_exception.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repository/i_auth_repository.dart';
 import '../datasources/firebase_auth_datasource.dart';
@@ -9,7 +9,7 @@ import '../datasources/firebase_auth_datasource.dart';
 /// Implements [IAuthRepository] using [IAuthDataSource].
 /// Catches [FirebaseAuthException] and maps to domain [Failure]s.
 class AuthRepositoryImpl implements IAuthRepository {
-  final IAuthDataSource _dataSource;
+  final FirebaseAuthDataSource _dataSource;
 
   const AuthRepositoryImpl(this._dataSource);
 
@@ -25,9 +25,10 @@ class AuthRepositoryImpl implements IAuthRepository {
     required String email,
     required String password,
     required String displayName,
+    required UserRole role,
   }) =>
       _execute(() =>
-          _dataSource.signUpWithEmailAndPassword(email, password, displayName));
+          _dataSource.signUpWithEmailAndPassword(email, password, displayName, role));
 
   @override
   Future< UserEntity> signInWithGoogle() =>
@@ -44,7 +45,7 @@ class AuthRepositoryImpl implements IAuthRepository {
     } on FirebaseAuthException catch (e) {
       throw _mapException(e);
     } catch (_) {
-      throw const SignOutException();
+      throw const UnexpectedException();
     }
   }
 
@@ -88,11 +89,12 @@ class AuthRepositoryImpl implements IAuthRepository {
 
   /// Generic wrapper that executes a datasource call returning [UserModel]
   /// and maps exceptions to [Exceptions].
-  Future< UserEntity> _execute(
-      Future<dynamic> Function() call) async {
+  Future<UserEntity> _execute(Future<dynamic> Function() call) async {
     try {
       final model = await call();
       return model.toEntity() as UserEntity;
+    } on AppException {
+      rethrow; // ← deja pasar el AppException del datasource tal cual
     } on FirebaseAuthException catch (e) {
       throw _mapException(e);
     } on Exception catch (e) {

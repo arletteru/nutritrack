@@ -1,54 +1,48 @@
-import 'package:equatable/equatable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-/// Pure domain entity. Zero Firebase dependencies.
-class UserEntity extends Equatable {
-  final String uid;
-  final String email;
-  final String? displayName;
-  final String? photoUrl;
-  final bool emailVerified;
-  final DateTime? createdAt;
+part 'user_entity.freezed.dart';
 
-  const UserEntity({
-    required this.uid,
-    required this.email,
-    this.displayName,
-    this.photoUrl,
-    this.emailVerified = false,
-    this.createdAt,
-  });
+enum UserRole {
+  nutriologist('nutriologist'),
+  patient('patient');
 
-  bool get hasName => displayName != null && displayName!.isNotEmpty;
+  // El valor exacto que se guardará en la base de datos
+  final String value;
+  const UserRole(this.value);
 
-  String get initials {
-    if (!hasName) return email.substring(0, 1).toUpperCase();
-    final parts = displayName!.trim().split(' ');
-    if (parts.length == 1) return parts[0].substring(0, 1).toUpperCase();
-    return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
-  }
-
-  UserEntity copyWith({
-    String? uid,
-    String? email,
-    String? displayName,
-    String? photoUrl,
-    bool? emailVerified,
-    DateTime? createdAt,
-  }) {
-    return UserEntity(
-      uid: uid ?? this.uid,
-      email: email ?? this.email,
-      displayName: displayName ?? this.displayName,
-      photoUrl: photoUrl ?? this.photoUrl,
-      emailVerified: emailVerified ?? this.emailVerified,
-      createdAt: createdAt ?? this.createdAt,
+  // Método ultra seguro para convertir un String de Firestore de vuelta al Enum
+  static UserRole fromString(String roleStr) {
+    return UserRole.values.firstWhere(
+      (element) => element.value == roleStr,
+      orElse: () => UserRole.patient, // Rol por defecto por si pasa algo raro
     );
   }
+}
 
-  @override
-  List<Object?> get props => [uid, email, displayName, photoUrl, emailVerified];
+@freezed
+abstract class UserEntity with _$UserEntity {
+  const UserEntity._(); // constructor privado para agregar métodos
 
-  @override
-  String toString() =>
-      'UserEntity(uid: $uid, email: $email, displayName: $displayName)';
+  const factory UserEntity({
+    required String uid,
+    required String email,
+    required UserRole role,
+    String? displayName,
+    String? photoUrl,
+    @Default(false) bool emailVerified,
+    DateTime? createdAt,
+  }) = _UserEntity;
+
+  // ── Computed helpers ───────────────────────────────────────────────────────
+  bool get isNutriologist => role == UserRole.nutriologist;
+  bool get isPatient => role == UserRole.patient;
+
+  String get initials {
+    if (displayName == null || displayName!.isEmpty) {
+      return email.substring(0, 1).toUpperCase();
+    }
+    final parts = displayName!.trim().split(' ');
+    if (parts.length == 1) return parts[0][0].toUpperCase();
+    return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+  }
 }

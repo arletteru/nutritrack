@@ -190,8 +190,8 @@ abstract final class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: colorScheme.primary,
           foregroundColor: colorScheme.onPrimary,
-          disabledBackgroundColor: colorScheme.primary.withOpacity(0.55),
-          disabledForegroundColor: colorScheme.onPrimary.withOpacity(0.6),
+          disabledBackgroundColor: colorScheme.primary.withValues(alpha: 0.55),
+          disabledForegroundColor: colorScheme.onPrimary.withValues(alpha: 0.6),
           elevation: 0,
           shadowColor: Colors.transparent,
           minimumSize: const Size(double.infinity, 56),

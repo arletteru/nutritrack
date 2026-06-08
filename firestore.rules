@@ -1,0 +1,114 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() { return request.auth != null; }
+    function uid() { return request.auth.uid; }
+    function isNutriologist() {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(uid())).data.role == 'nutriologist';
+    }
+    function isAssignedNutriologist(patientDocId) {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/patients/$(patientDocId))
+          .data.nutriologistId == uid();
+    }
+
+    match /users/{userId} {
+      allow read: if isSignedIn() && (uid() == userId || isNutriologist());
+      allow create: if isSignedIn() && uid() == userId;
+      allow update: if isSignedIn() && uid() == userId;
+      allow delete: if false;
+    }
+
+    match /nutriologist_profiles/{userId} {
+      allow read, write: if isSignedIn() && uid() == userId;
+    }
+
+    match /patients/{patientId} {
+      allow read, write: if isSignedIn() && resource.data.nutriologistId == uid();
+      allow create: if isNutriologist() && request.resource.data.nutriologistId == uid();
+      allow read: if isSignedIn() && resource.data.uid == uid();
+      allow update: if isSignedIn() &&
+        resource.data.email == request.auth.token.email &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['uid']);
+    }
+
+    match /patient_links/{emailKey} {
+      allow write: if isNutriologist();
+      allow read: if true;
+    }
+
+    match /appointments/{appointmentId} {
+      allow read: if isSignedIn() && (
+        resource.data.nutriologistId == uid() ||
+        resource.data.patientUid == uid()
+      );
+      allow create: if isNutriologist() &&
+        request.resource.data.nutriologistId == uid();
+      allow update: if isSignedIn() && (
+        resource.data.nutriologistId == uid() ||
+        (resource.data.patientUid == '' &&
+         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['patientUid']) &&
+         request.resource.data.patientUid == uid())
+      );
+      allow delete: if false;
+    }
+
+    match /consultations/{consultationId} {
+      allow read: if isSignedIn() && (
+        resource.data.nutriologistId == uid() ||
+        resource.data.patientUid == uid() ||
+        resource.data.patientUid == '' ||
+        isNutriologist()
+      );
+      allow list: if isSignedIn() && (
+        request.query.filters.patientUid == uid() ||
+        request.query.filters.nutriologistId == uid()
+      );
+      allow create: if isNutriologist() &&
+        request.resource.data.nutriologistId == uid();
+      allow update: if isSignedIn() && (
+        resource.data.nutriologistId == uid() ||
+        (resource.data.patientUid == '' &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['patientUid']) &&
+        request.resource.data.patientUid == uid())
+      );
+      allow delete: if false;
+
+      match /steps/{stepId} {
+        allow read: if isSignedIn() && (
+          get(/databases/$(database)/documents/consultations/$(consultationId))
+            .data.nutriologistId == uid() ||
+          get(/databases/$(database)/documents/consultations/$(consultationId))
+            .data.patientUid == uid()
+        );
+        allow write: if isSignedIn() &&
+          get(/databases/$(database)/documents/consultations/$(consultationId))
+            .data.nutriologistId == uid();
+      }
+    }
+
+    match /recommendations/{recId} {
+      allow read: if isSignedIn() && (
+        resource.data.nutriologistId == uid() ||
+        resource.data.patientUid == uid()
+      );
+      allow create: if isSignedIn() &&
+        request.resource.data.nutriologistId == uid();
+      allow update: if isSignedIn() &&
+        resource.data.nutriologistId == uid();
+      allow delete: if false;
+    }
+
+    match /daily_logs/{patientId}/entries/{date} {
+      allow read, write: if isSignedIn() && uid() == patientId;
+      allow read: if isNutriologist();
+    }
+
+    match /tasks/{patientUid}/items/{taskId} {
+      allow read: if isSignedIn() && uid() == patientUid;
+      allow read, write: if isNutriologist();
+    }
+  }
+}
