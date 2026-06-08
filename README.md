@@ -1,4 +1,4 @@
-# NutriTrack 🌿
+# NutriTrack 
 
 Sistema móvil de expediente clínico nutricional desarrollado con Flutter y Firebase. Permite a nutriólogos gestionar pacientes, realizar consultas estructuradas y hacer seguimiento del tratamiento, mientras los pacientes pueden ver su plan nutricional y registrar su cumplimiento diario.
 
@@ -7,15 +7,26 @@ Sistema móvil de expediente clínico nutricional desarrollado con Flutter y Fir
 ## Capturas de pantalla
 
 ### Nutriólogo
-| Home | Pacientes | Expediente | Consulta | Agenda |
-|:---:|:---:|:---:|:---:|:---:|
-| ![Home nutriólogo](screenshots/home_n.jpeg) | ![Pacientes](screenshots/patient_b.jpeg) | ![Expediente](screenshots/exp_b.jpeg) | ![Consulta](screenshots/cons_b.jpeg) | ![Agenda](screenshots/sche_b.jpeg) |
+<div align="center">
+<img src="screenshots/home_n.jpeg" width="180"/>
+<img src="screenshots/patient_b.jpeg" width="180"/>
+<img src="screenshots/exp_b.jpeg" width="180"/>
+<img src="screenshots/cons_b.jpeg" width="180"/>
+<img src="screenshots/sche_b.jpeg" width="180"/>
+</div>
+
+**Home · Pacientes · Expediente · Consulta · Agenda**
+
+---
 
 ### Paciente
-| Home | Mi plan | Tareas |
-|:---:|:---:|:---:|
-| ![Home paciente](screenshots/home_pat.jpeg) | ![Mi plan](screenshots/summary.jpeg) | ![Tareas](screenshots/task.jpeg) |
+<div align="center">
+<img src="screenshots/home_pat.jpeg" width="180"/>
+<img src="screenshots/summary.jpeg" width="180"/>
+<img src="screenshots/task.jpeg" width="180"/>
+</div>
 
+**Home · Mi plan · Tareas**
 ## Stack tecnológico
 
 | Tecnología | Versión | Uso |
